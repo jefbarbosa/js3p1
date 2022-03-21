@@ -6,7 +6,9 @@ import com.jef.js3p1.dto.CharacterDTO;
 import com.jef.js3p1.dto.CharacterFile;
 import com.jef.js3p1.entity.Character;
 import com.jef.js3p1.repository.CharacterRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,16 +18,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@PropertySource("classpath:application.properties")
 public class CharacterService implements CharacterRepository {
 
     List<Character> databaseCharacter = new ArrayList<>();
 
-    @Value("${database.local.path}")
     private String localPath;
 
-    public CharacterService() {
-        System.out.println("\n" + localPath);
-        localPath = "src/main/resources/static/starwars.json";
+    @Autowired
+    public CharacterService(@Value("${database.local.path:\"src/main/resources/static/starwars.json\"}") String localPath) {
+        this.localPath = localPath;
+
         List<CharacterFile> listCharacterFile = loadData();
         transform(listCharacterFile);
     }
